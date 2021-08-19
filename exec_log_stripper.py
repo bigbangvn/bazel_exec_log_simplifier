@@ -1,3 +1,4 @@
+import sys
 
 # To investigate Bazel cache miss issue we need to parse execution log and compare to check which input changes
 # Because the log file is usually very big (x0MB) and there're alot of files that we know they don't change (because we can see git log)
@@ -63,7 +64,14 @@ def detectAcceptAll(str):
   return True
 
 if __name__ == "__main__":
+  input = sys.argv[1]
+  if not input:
+    print("Need to input bazel exec log (parsed to text")
+    exit()
+  print("Input: {}".format(input))
+  output = "{}_simplified.txt".format(input)
+  print("Output: {}".format(output))
   print("START")
-  stripInput(start_token = 'inputs {\n', input_file='bazel_exec_Driver.txt', output_path = 'result1.txt', detector_func=detectExtensions)
-  stripInput(start_token = 'actual_outputs {\n', input_file='result1.txt', output_path = 'result2.txt', detector_func=detectAcceptAll)
+  stripInput(start_token = 'inputs {\n', input_file=input, output_path='temp.txt', detector_func=detectExtensions)
+  stripInput(start_token = 'actual_outputs {\n', input_file='temp.txt', output_path =output, detector_func=detectAcceptAll)
   print("FINISHED")
